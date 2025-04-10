@@ -30,29 +30,10 @@ def get_product_list(last_id, client_id, seller_token):
                    либо при неуспешной попытке получения ответа от Api.
 
     Examples:
-        >>> get_product_list('', 'your_client_id', 'your_seller_token')
-        "result": {
-          "items": [
-            {
-              "archived": true,
-              "has_fbo_stocks": true,
-              "has_fbs_stocks": true,
-              "is_discounted": true,
-              "offer_id": "136748",
-              "product_id": 223681945,
-              "quants": [
-                {
-                  "quant_code": "string",
-                  "quant_size": 0
-                }
-              ]
-            }
-          ],
-          "total": 1,
-          "last_id": "bnVсbA=="
-        }
+        >>> get_product_list('', 'client_id', 'seller_token')
+        "items": [{"archived": true ... }]}
         >>> get_product_list('', 'incorrect_client_id', 'incorrect_seller_token')
-        {}
+        None
     """
     url = "https://api-seller.ozon.ru/v2/product/list"
     headers = {
@@ -83,17 +64,17 @@ def get_offer_ids(client_id, seller_token):
         list: Список артикулов товаров.
 
     Raises:
-        AttributeError: Если атрибуты last_id, client_id, seller_token
+        AttributeError: Если атрибуты client_id, seller_token
                         не строчного типа данных.
         HTTPError: При неуспешной попытке передать запрос
                либо при неуспешной попытке получения ответа от Api.
 
     Examples:
-        >>> get_offer_ids('your_client_id', 'your_seller_token')
+        >>> get_offer_ids('client_id', 'seller_token')
         ['136748', '321456', '236654', ...]
 
-        >>> get_offer_ids('your_client_id', 'incorrect_token')
-        ValueError: Invalid seller token
+        >>> get_offer_ids('client_id', 'incorrect_token')
+        None
     """
     last_id = ""
     product_list = []
@@ -128,18 +109,10 @@ def update_price(prices: list, client_id, seller_token):
                    либо при неуспешной попытке получения ответа от Api.
 
     Examples:
-        >>> update_price(price = {
-                                "auto_action_enabled": "UNKNOWN",
-                                "currency_code": "RUB",
-                                "offer_id": 234654),
-                                "old_price": "0",
-                                "price": 1500,}
-                        'your_client_id',
-                        'your_seller_token')
-
+        >>> update_price(price, 'client_id', 'seller_token')
         {'success': True, 'updated_count': 1}
 
-        >>> update_price(price=1000, 'client_id', 'incorrect_token')
+        >>> update_price(price, 'client_id', 'incorrect_token')
         {"code": 0, "details": [{"typeUrl": "string","value": "string"}], "message": "string"}
     """
     url = "https://api-seller.ozon.ru/v1/product/import/prices"
@@ -173,7 +146,7 @@ def update_stocks(stocks: list, client_id, seller_token):
         >>> update_stocks(stocks, client_id, seller_token)
         {"result": [{"product_id": 55946,"offer_id": "PG-2404С1", "updated": true, "errors": []}]}
 
-        >>> update_stocks(incorrect_stocks, client_id, seller_token)
+        >>> update_stocks(stocks, client_id, incorrect_seller_token)
         {"code": 0,"details": [{"typeUrl": "string", "value": "string"}], "message": "string"}
     """
     url = "https://api-seller.ozon.ru/v1/product/import/stocks"
@@ -241,6 +214,11 @@ def create_stocks(watch_remnants, offer_ids):
     Raises:
         KeyError: Если ключи "Код", "Количество" отсутствуют в словаре watch
 
+    Examples:
+        >>> create_stocks(watch_remnants, offer_ids, warehouse_id)
+        {"offer_id": offer_id, "stock": 0}
+        >>> create_stocks(incorrect_watch_remnants, offer_ids, incorrect_warehouse_id)
+        None
     """
     # Уберем то, что не загружено в seller
     stocks = []
